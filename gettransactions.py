@@ -100,4 +100,4 @@ for data in datas['data']:
         print(e)
         # sleep(40000)
 
-bot.infinity_polling()
+bot.polling()
