@@ -47,9 +47,9 @@ except Exception as e:
 
 datas =response.json()
 
-# print(datas)
 
 bot = telebot.TeleBot(API_KEY)
+bot.config['api_key'] = API_KEY
 
 for data in datas['data']:
     try:
@@ -63,7 +63,7 @@ for data in datas['data']:
             SELECT timestamp FROM TRANSACTIONS
         '''
         cursor.execute(db_selectall)
-        db_timestamps = cursor.fetchall
+        db_timestamps = cursor.fetchall()
         timestamp_list = []        
         
         try:
@@ -100,4 +100,4 @@ for data in datas['data']:
         print(e)
         # sleep(40000)
 
-bot.polling()
+bot.poll()
