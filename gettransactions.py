@@ -90,14 +90,14 @@ for data in datas['data']:
         my_time = datetime.datetime.utcfromtimestamp(int(timestamp)/1000)
         # print(timestamp)
         insert_query = '''INSERT INTO transactions
-                            (timestamp, transaction_id, symbol, to_address, from_address, amount) VALUES (?,?,?,?,?,?);
+                            (timestamp, transaction_id, symbol, to_address, from_address, amount) VALUES (?,?,?,?,?,?,?);
                         '''
         data_tup = (timestamp_val,transaction_id,symbol,to_address,from_address,value)
         
         if to_address == address:
             # print(f"You have successfully received {value} from {from_address} to {to_address} with transaction ID {transaction_id} at {my_time} UTC.")
             cursor.execute("""INSERT INTO transactions
-                            (timestamp, transaction_id, symbol, to_address, from_address, amount, status) VALUES (?,?,?,?,?,?);
+                            (timestamp, transaction_id, symbol, to_address, from_address, amount, status) VALUES (?,?,?,?,?,?,?);
                         """, (timestamp_val,transaction_id,symbol,to_address,from_address,value,'received'))
             connection.commit()
             bot.send_message("-1001778640424", f"You have successfully received {int(value)/1000000} USDT from {from_address} to {to_address} at {my_time} UTC. https://tronscan.org/#/transaction/{transaction_id}")
@@ -105,7 +105,7 @@ for data in datas['data']:
         if from_address == address:
             # print(f"You have successfully transfered {value} from {from_address} to {to_address} with transaction ID {transaction_id} at {my_time} UTC.")
             cursor.execute("""INSERT INTO transactions
-                            (timestamp, transaction_id, symbol, to_address, from_address, amount, status) VALUES (?,?,?,?,?,?);
+                            (timestamp, transaction_id, symbol, to_address, from_address, amount, status) VALUES (?,?,?,?,?,?,?);
                         """, (timestamp_val,transaction_id,symbol,to_address,from_address,value,'sent'))
             connection.commit()
             bot.send_message("-1001778640424", f"You have successfully transfered {int(value)/1000000} USDT from {from_address} to {to_address} at {my_time} UTC. https://tronscan.org/#/transaction/{transaction_id}")
