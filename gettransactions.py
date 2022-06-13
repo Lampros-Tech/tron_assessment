@@ -18,7 +18,7 @@ data_limit = "200"
 order_by = "block_timestamp,asc"
 # print(order_by)
 #&order_by={order_by}
-min_timestamp = "1648771200000"
+min_timestamp = "1640995200000"
 url = f"https://api.trongrid.io/v1/accounts/{address}/transactions/trc20?only_confirmed={only_confirned}&min_timestamp={min_timestamp}&limit={data_limit}&order_by={order_by}"
 
 headers = {"Accept": "application/json"}
@@ -100,7 +100,7 @@ for data in datas['data']:
                             (timestamp, transaction_id, symbol, to_address, from_address, amount, status) VALUES (?,?,?,?,?,?);
                         """, (timestamp_val,transaction_id,symbol,to_address,from_address,value,'received'))
             connection.commit()
-            bot.send_message("-1001778640424", f"You have successfully received {value} from {from_address} to {to_address} with transaction ID {transaction_id} at {my_time} UTC.")
+            bot.send_message("-1001778640424", f"You have successfully received {int(value)/1000000} USDT from {from_address} to {to_address} at {my_time} UTC. https://tronscan.org/#/transaction/{transaction_id}")
         
         if from_address == address:
             # print(f"You have successfully transfered {value} from {from_address} to {to_address} with transaction ID {transaction_id} at {my_time} UTC.")
@@ -108,7 +108,7 @@ for data in datas['data']:
                             (timestamp, transaction_id, symbol, to_address, from_address, amount, status) VALUES (?,?,?,?,?,?);
                         """, (timestamp_val,transaction_id,symbol,to_address,from_address,value,'sent'))
             connection.commit()
-            bot.send_message("-1001778640424", f"You have successfully transfered {value} from {from_address} to {to_address} with transaction ID {transaction_id} at {my_time} UTC.")
+            bot.send_message("-1001778640424", f"You have successfully transfered {int(value)/1000000} USDT from {from_address} to {to_address} at {my_time} UTC. https://tronscan.org/#/transaction/{transaction_id}")
     # except Exception as e:
     #     print(e)
     #     sleep(40000)
