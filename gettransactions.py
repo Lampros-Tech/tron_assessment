@@ -138,7 +138,8 @@ def send_daily_report():
         my_time = datetime.datetime.utcfromtimestamp(Data[0])
         # print(my_time)
         if Data:
-            bot.send_message("-1001778640424",f"Your daily summary as on {my_time}UTC: \nTotal Received: {int(Data[1])/1000000}USDT \nTotal Transfers: {int(Data[2])/1000000}USDT \nNet Amount:{int(Data[3])/1000000}USDT \n")
+            pass
+            # bot.send_message("-1001778640424",f"Your daily summary as on {my_time}UTC: \nTotal Received: {int(Data[1])/1000000}USDT \nTotal Transfers: {int(Data[2])/1000000}USDT \nNet Amount:{int(Data[3])/1000000}USDT \n")
     except Exception as e:
         return(e)
 
