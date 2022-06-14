@@ -145,7 +145,7 @@ def send_daily_report():
 
 
 if __name__ == '__main__':
-    schedule.every().day.at("00:00").do(send_daily_report())
+    schedule.every().day.at("00:00").do(send_daily_report)
     #schedule.every().second.do(send_daily_report)
     Thread(target=schedule_checker).start() 
 
