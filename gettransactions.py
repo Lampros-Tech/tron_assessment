@@ -7,6 +7,8 @@ import telebot
 import os
 from dotenv import load_dotenv
 import datetime
+import schedule
+from threading import Thread
 
 
 load_dotenv()
@@ -34,12 +36,12 @@ connection = sqlite3.connect("trondb.db")
 cursor = connection.cursor()
 
 table = ''' CREATE TABLE transactions(
-            timestamp VARCHAR(25) NOT NULL,
+            timestamp INTEGER NOT NULL,
             transaction_id VARCHAR(350) NOT NULL,
             symbol CHAR(50) NOT NULL,
             to_address VARCHAR(350) NOT NULL,
             from_address VARCHAR(350) NOT NULL,
-            amount VARCHAR(350) NOT NULL,
+            amount INTEGER NOT NULL,
             status VARCHAR(30) NOT NULL
 ); '''
 
@@ -84,8 +86,8 @@ for data in datas['data']:
     from_address = data['from']
     to_address = data['to']
     transaction_type = data['type']
-    value = data['value']
-    timestamp_val = data['block_timestamp']
+    value = int(data['value'])
+    timestamp_val = int(data['block_timestamp'])
     if symbol == default_symbol:
         my_time = datetime.datetime.utcfromtimestamp(int(timestamp)/1000)
         # print(timestamp)
@@ -100,7 +102,7 @@ for data in datas['data']:
                             (timestamp, transaction_id, symbol, to_address, from_address, amount, status) VALUES (?,?,?,?,?,?,?);
                         """, (timestamp_val,transaction_id,symbol,to_address,from_address,value,'received'))
             connection.commit()
-            bot.send_message("-1001778640424", f"You have successfully received {int(value)/1000000} USDT from {from_address} to {to_address} at {my_time} UTC. https://tronscan.org/#/transaction/{transaction_id}")
+            # bot.send_message("-1001778640424", f"You have successfully received {int(value)/1000000} USDT from {from_address} to {to_address} at {my_time} UTC. https://tronscan.org/#/transaction/{transaction_id}")
         
         if from_address == address:
             # print(f"You have successfully transfered {value} from {from_address} to {to_address} with transaction ID {transaction_id} at {my_time} UTC.")
@@ -108,9 +110,43 @@ for data in datas['data']:
                             (timestamp, transaction_id, symbol, to_address, from_address, amount, status) VALUES (?,?,?,?,?,?,?);
                         """, (timestamp_val,transaction_id,symbol,to_address,from_address,value,'sent'))
             connection.commit()
-            bot.send_message("-1001778640424", f"You have successfully transfered {int(value)/1000000} USDT from {from_address} to {to_address} at {my_time} UTC. https://tronscan.org/#/transaction/{transaction_id}")
+            # bot.send_message("-1001778640424", f"You have successfully transfered {int(value)/1000000} USDT from {from_address} to {to_address} at {my_time} UTC. https://tronscan.org/#/transaction/{transaction_id}")
     # except Exception as e:
     #     print(e)
     #     sleep(40000)
 
+def schedule_checker():
+    while True:
+        schedule.run_pending()
+        sleep(1)
+
+
+def send_daily_report():
+    try:
+        select_top = """
+            SELECT MAX(date) FROM daily ;
+        """
+        cursor.execute(select_top)
+        top1 = cursor.fetchone()
+        # print(top1[0])
+        select_data = f"""
+            SELECT * FROM daily WHERE date = '{top1[0]}'
+        """
+        cursor.execute(select_data)
+        Data = cursor.fetchone()
+        # print(Data[0])
+        my_time = datetime.datetime.utcfromtimestamp(Data[0])
+        # print(my_time)
+        if Data:
+            bot.send_message("-1001778640424",f"Your daily summary as on {my_time}UTC: \nTotal Received: {int(Data[1])/1000000}USDT \nTotal Transfers: {int(Data[2])/1000000}USDT \nNet Amount:{int(Data[3])/1000000}USDT \n")
+    except Exception as e:
+        return(e)
+
+
+if __name__ == '__main__':
+    schedule.every().day.at("00:00").do(send_daily_report())
+    #schedule.every().second.do(send_daily_report)
+    Thread(target=schedule_checker).start() 
+
 bot.poll()
+
